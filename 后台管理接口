@@ -1,0 +1,133 @@
+后台管理接口
+首页
+
+标签管理
+tag：{id, name, addtime}
+
+获取标签： /admin/tag
+	请求：get
+	参数：{
+		keyword: 关键字, 
+		page: 页数，
+		page_size: 每页大小
+	}
+	返回：{
+		data: 标签列表，
+		total: 标签数量
+	}
+
+添加标签：/admin/tag
+	请求：post
+	参数：{
+		name: 标签名
+	}
+	返回：{
+		state: 添加状态，
+		data: 标签对象
+	}
+
+修改标签：
+	请求：put
+	参数：{
+		id: 标签ID，
+		name: 标签名
+	}
+	返回：{
+		state: 修改状态
+	}
+
+删除标签：
+	请求：delete
+	参数：{
+		id: 标签ID
+	}
+	返回：{
+		state:　删除状态
+	}
+
+
+
+/*********************   电影管理   ********************/
+movie: {id, title, url, info, logo, star, playnum, commentnum, tag_id, area, release_time, length, addtime, comments, moviecols}
+
+获取电影： /admin/movie
+	请求： get
+	参数： {
+		keyword: 关键字, 
+		page: 页数，
+		page_size: 每页大小
+	}
+	返回： {
+		data: 电影列表，
+		total: 数量
+	}
+
+添加电影：
+	请求： post
+	参数： {
+		title: 标题
+		url: 地址
+		info: 简介
+		logo: 封面
+		star: 星级
+		playnum: 播放量
+		commentnum: 评论量
+		tag_id: 标签
+		area: 上映地区
+		release_time: 上映时间
+		length: 播放时间
+	}
+	返回： {
+		state: 状态，
+	}
+
+修改电影：
+	请求： put
+	参数： {
+		id: 编号
+		title: 标题
+		url: 地址
+		info: 简介
+		logo: 封面
+		star: 星级
+		playnum: 播放量
+		commentnum: 评论量
+		tag_id: 标签
+		area: 上映地区
+		release_time: 上映时间
+		length: 播放时间
+	}
+	返回： {
+		state: 状态
+	}
+
+删除电影：
+	请求： delete
+	参数： {
+		id: 编号
+	}
+	返回： {
+		state: 状态
+	}
+
+
+
+预告管理
+
+会员管理
+
+评论管理
+
+收藏管理
+
+日志管理
+
+权限管理
+
+角色管理
+
+管理员管理
+
+修改密码
+
+退出登录
