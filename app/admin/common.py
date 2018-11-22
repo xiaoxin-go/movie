@@ -51,17 +51,15 @@ class Movie_(Base):
     def del_data(self):
         data = self.request.values
         print(data)
+        print('del movie...')
         ids = data.get('id_list[]')
+        id = data.get('id')
+        if ids:
+            Movie.query.filter(Movie.id.in_(json.loads(ids))).update({'is_delete':0},synchronize_session=False)
 
-        for id in json.loads(ids):
-        # 删除电影
-            movie = Movie.query.get(id)
+        if id:
+            Movie.query.filter_by(id=id).update({'is_delete':0})
 
-            # 删除电影相关图片，链接
-            Link.query.filter_by(movie_id=id).delete()
-            Image.query.filter_by(movie_id=id).delete()
-
-            db.session.delete(movie)
         db.session.commit()
         return {'state': 1}
 
@@ -69,18 +67,18 @@ class Performer_(Movie_):
     def del_data(self):
         data = self.request.values
         ids = data.get('id_list[]')
+        print(ids)
+        ids = json.loads(ids)
+        if isinstance(ids,list):
+            performers = Performer.query.filter(Performer.id.in_(ids))
+            performer_names = list(map(lambda item: item.name, performers))
+            Movie.query.filter(Movie.performer.in_(performer_names)).update({'is_delete': 0}, synchronize_session=False)
+            performers.update({'is_delete': 0}, synchronize_session=False)
+        else:
+            performer = Performer.query.get(ids)
+            Movie.query.filter_by(performer=performer.name).update({'is_delete':0})
+            performer.is_delete = 0
 
-        for id in json.loads(ids):
-            performer = Performer.query.get(id)
-
-            # 删除演员的电影
-            movies = Movie.query.filter_by(performer=performer.name)
-            for movie in movies:
-                # 删除电影连接图片
-                Link.query.filter_by(movie_id=movie.id).delete()
-                Image.query.filter_by(movie_id=movie.id).delete()
-            movies.delete()
-            db.session.delete(performer)
         db.session.commit()
-
+        print('delete end...')
         return {'state': 1}

@@ -181,8 +181,6 @@ class Movie:
             url = performer.get('url')
             self.main(url)
 
-
-
 if __name__ == '__main__':
     movie = Movie()
     movie.exec()

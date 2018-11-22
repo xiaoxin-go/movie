@@ -1,6 +1,6 @@
 /*/target/*
-./app/static/image/movie
-./app/static/image/performer
+/*/image/movie/*
+/*/image/performer/*
 *.jpg
 *.class
 *.lock

@@ -118,11 +118,11 @@ def performerlogo():
     title = movie.title.split(' ')[0]
     import os
     print(os.getcwd())
-    movie_file = open(r'app/static/image/movie/' + title + '/' + title + '.jpg','rb')
+    movie_file = open(r'F:\httpd-2.4.37-win64-VC15\Apache24\htdocs\image\movie\%s' % title + '\\' + title + '.jpg','rb')
     text = movie_file.read()
     movie_file.close()
 
-    with open(r'app/static/image/performer/' + performer.name + '.jpg','wb') as f:
+    with open(r'F:\httpd-2.4.37-win64-VC15\Apache24\htdocs\image\performer\%s' % performer.name + '.jpg','wb') as f:
         f.write(text)
     performer.save()
     print(performer.name)

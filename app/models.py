@@ -21,7 +21,7 @@ class DB:
 
     # 单个模糊查询方法
     @classmethod
-    def filter_(cls, key, keyword):
+    def filter_like(cls, key, keyword):
         return cls.query.filter(key.like("%{}%".format(keyword)))
 
     # 多个模糊查询方法
@@ -40,16 +40,13 @@ class User(db.Model,DB):
     id = db.Column(db.Integer, primary_key=True)  # 编号
     name = db.Column(db.String(100), unique=True)  # 昵称
     pwd = db.Column(db.String(100))  # 密码
-    email = db.Column(db.String(100), unique=True)  # 邮箱
-    phone = db.Column(db.String(11), unique=True)  # 手机号码
+    email = db.Column(db.String(100))  # 邮箱
+    phone = db.Column(db.String(11))  # 手机号码
     info = db.Column(db.Text)  # 个性简介
-    face = db.Column(db.String(255), unique=True)  # 头像
+    face = db.Column(db.String(255))  # 头像
     #state = db.Column(db.Integer, default=1)                   # 状态
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)  # 注册时间
     uuid = db.Column(db.String(255), unique=True)  # 唯一标志符
-    userlogs = db.relationship('Userlog', backref='user')  # 会员日志外键关系关联
-    comments = db.relationship('Comment', backref='user')  # 评论外键关系关联
-    moviecols = db.relationship('Moviecol', backref='user')  # 收藏外键关系关联
 
     def __repr__(self):
         return "<User %r>" % self.name
@@ -76,15 +73,10 @@ class Tag(db.Model,DB):
     id = db.Column(db.Integer, primary_key=True)    # 编号
     name = db.Column(db.String(100), unique=True)   # 标签名
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)   # 添加时间
-    movies = db.relationship("Movie", backref='tag')    # 电影信息
 
     def __repr__(self):
         return "<Tag %r>" % self.name
 
-movie_performer = db.Table('movie_performer',
-    db.Column('movie_id', db.Integer, db.ForeignKey('movie.id')),
-    db.Column('performer_id', db.Integer, db.ForeignKey('performer.id'))
-)
 
 # 电影
 class Movie(db.Model,DB):
@@ -93,8 +85,12 @@ class Movie(db.Model,DB):
     title = db.Column(db.String(255), unique=True)  # 标题
     url = db.Column(db.String(255), unique=True)    # 地址
     info = db.Column(db.Text)                       # 简介
-    #logo = db.Column(db.LargeBinary)   # 封面
+    logo = db.Column(db.String(100))   # 封面
     genre = db.Column(db.String(255))
+    series = db.Column(db.String(255))
+    vender = db.Column(db.String(255))
+    director = db.Column(db.String(255))
+    studio = db.Column(db.String(255))
     star = db.Column(db.SmallInteger)               # 星级
     playnum = db.Column(db.BigInteger)              # 播放量
     commentnum = db.Column(db.BigInteger)           # 评论量
@@ -104,12 +100,9 @@ class Movie(db.Model,DB):
     length = db.Column(db.String(100))              # 播放长度
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)   # 添加时间
     performer = db.Column(db.String(500))           # 演员，以,分割
-    state = db.Column(db.Integer)
-    comments = db.relationship('Comment', backref='movie')
-    moviecols = db.relationship('Moviecol', backref='movie')
-    links = db.relationship('Link', backref='movie')
-    images = db.relationship('Image', backref='movie')
-    performers = db.relationship('Performer', secondary=movie_performer, backref='movie')
+    state = db.Column(db.SmallInteger)
+    video = db.Column(db.String(30))
+    is_delete = db.Column(db.SmallInteger, default=1)
 
     def __repr__(self):
         return '<Movie %r>' % self.title
@@ -124,14 +117,15 @@ class Performer(db.Model,DB):
     name = db.Column(db.String(255))    # 演员名
     age = db.Column(db.SmallInteger)    # 年龄
     birthday = db.Column(db.Date)       # 生日
-    height = db.Column(db.SmallInteger) # 身高
+    height = db.Column(db.String(20)) # 身高
     cup = db.Column(db.String(10))      # 大小
-    bust = db.Column(db.SmallInteger)   # 上
-    waist = db.Column(db.SmallInteger)  # 中
-    hips = db.Column(db.SmallInteger)   # 下
+    bust = db.Column(db.String(10))   # 上
+    waist = db.Column(db.String(10))  # 中
+    hips = db.Column(db.String(10))   # 下
     hometown = db.Column(db.String(255))    # 出生地
     hobby = db.Column(db.String(100))   # 兴趣
-    #image = db.Column(db.LargeBinary)          # 头像
+    is_delete = db.Column(db.SmallInteger, default=1)
+    image = db.Column(db.String(100))          # 头像
     #movies = db.relationship('Movie', backref='performer')
 
     def __repr__(self):
@@ -148,7 +142,7 @@ class Link(db.Model,DB):
     url = db.Column(db.Text)
     size = db.Column(db.String(20))
     share_date = db.Column(db.Date)
-    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))
+    movie_id = db.Column(db.Integer)
     def __repr__(self):
         return '<Link %r>' % self.name
 
@@ -158,7 +152,7 @@ class Image(db.Model,DB):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
     url = db.Column(db.String(255))
-    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))
+    movie_id = db.Column(db.Integer)
 
 # 预告
 class Preview(db.Model,DB):
@@ -176,8 +170,8 @@ class Comment(db.Model,DB):
     __tablename__ = 'comment'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text)
-    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    movie_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)
 
     def __repr__(self):
@@ -187,8 +181,8 @@ class Comment(db.Model,DB):
 class Moviecol(db.Model,DB):
     __tablename__ = 'moviecol'
     id = db.Column(db.Integer, primary_key=True)
-    movie_id = db.Column(db.Integer, db.ForeignKey('movie.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    movie_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)
 
     def __repr__(self):
@@ -238,8 +232,6 @@ class Admin(db.Model,DB):
     is_super = db.Column(db.SmallInteger)           # 是否为超级管理员
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)
-    adminlogs = db.relationship('Adminlog', backref='admin')
-    oplogs = db.relationship('Oplog', backref='admin')
 
     def __repr__(self):
         return '<Admin %r>' % self.name
@@ -248,7 +240,7 @@ class Admin(db.Model,DB):
 class Adminlog(db.Model,DB):
     __tablename__ = 'adminlog'
     id = db.Column(db.Integer, primary_key=True)
-    admin_id = db.Column(db.Integer, db.ForeignKey('admin.id'))
+    admin_id = db.Column(db.Integer)
     ip = db.Column(db.String(100))          # 登录IP
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)
 
@@ -259,7 +251,7 @@ class Adminlog(db.Model,DB):
 class Oplog(db.Model,DB):
     __tablename__ = 'oplog'
     id = db.Column(db.Integer, primary_key=True)
-    admin_id = db.Column(db.Integer, db.ForeignKey('admin.id'))
+    admin_id = db.Column(db.Integer)
     ip = db.Column(db.String(100))
     reason = db.Column(db.String(600))      # 操作原因
     addtime = db.Column(db.DateTime, index=True, default=datetime.now)
