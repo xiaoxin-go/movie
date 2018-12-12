@@ -1,10 +1,13 @@
 from app import app
-from flask_script import Manager
+from flask_script import Manager,Server
 from app.models import Tag
 from app import db
+import socket
+
+server_ip = socket.gethostbyname(socket.gethostname())
 
 manager = Manager(app)
-
+manager.add_command('start', Server(host=server_ip, port=80))
 @manager.command
 def dev():                      # 执行 python Sample.py dev   更新文件时，会自动重启服务器
     from livereload import Server

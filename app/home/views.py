@@ -1,3 +1,4 @@
+import socket
 from flask import Blueprint, flash, redirect, render_template, request, stream_with_context,session, url_for, jsonify, Response
 from werkzeug.security import check_password_hash,generate_password_hash
 from app.models import *
@@ -5,6 +6,11 @@ from sqlalchemy import or_, and_
 import random
 from app.home.common import *
 bp = Blueprint('home', __name__, url_prefix='/home')    # 创建蓝图
+
+
+@bp.route('/server', methods=['GET'])
+def server():
+    return jsonify({'server':'http://%s:8000' % socket.gethostbyname(socket.gethostname())})
 
 @bp.route('/', methods=['GET'])
 def index():
