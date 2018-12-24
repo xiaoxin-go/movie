@@ -124,7 +124,7 @@ def movie_detail():
     l2 = random.choice(genre_counts)
 
     other_movie = Movie.query.filter(Movie.genre.like('%{}%'.format(genres[l1]))
-                                          ,Movie.genre.like('%{}%'.format(genres[l2])),Movie.id != movie.id,Movie.is_delete==0)[:6]
+                                          ,Movie.genre.like('%{}%'.format(genres[l2])),Movie.id != movie.id,Movie.is_delete==1)[:6]
 
 
     base_data = to_json(movie)
